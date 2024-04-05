@@ -1,5 +1,5 @@
 import pandas as pd
-from assets import raw_comments, preprocessed_comments, sentiment_analysis, sentiment_summary
+from src.assets import raw_comments, preprocessed_comments, sentiment_analysis, sentiment_summary
 from unittest.mock import patch
 from unittest.mock import Mock
 

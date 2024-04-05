@@ -1,6 +1,6 @@
 from dagster import repository
-from assets import raw_comments, preprocessed_comments, sentiment_analysis, sentiment_summary
-from resources import text_preprocessor_resource
+from src.assets import raw_comments, preprocessed_comments, sentiment_analysis, sentiment_summary
+from src.resources import text_preprocessor_resource
 
 @repository
 def mental_health_repo():
