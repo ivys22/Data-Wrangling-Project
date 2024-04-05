@@ -20,7 +20,21 @@ def preprocessed_comments(context, raw_comments: pd.DataFrame) -> pd.DataFrame:
 @asset
 def sentiment_analysis(preprocessed_comments: pd.DataFrame) -> pd.DataFrame:
     """Performs sentiment analysis on the preprocessed comments. For each comment, it uses TextBlob to calculate the sentiment polarity. Based on the polarity, comments are categorized as 'positive', 'neutral', or 'negative'."""
-    ...
+    def analyze_sentiment(text):
+        analysis = TextBlob(text)
+        if analysis.sentiment.polarity > 0:
+            return 'positive', analysis.sentiment.polarity
+        elif analysis.sentiment.polarity == 0:
+            return 'neutral', analysis.sentiment.polarity
+        else:
+            return 'negative', analysis.sentiment.polarity
+    
+    sentiments = preprocessed_comments['processed_text'].apply(lambda x: analyze_sentiment(x))
+    return pd.DataFrame({
+        "comment_id": preprocessed_comments["comment_id"],
+        "sentiment": [s[0] for s in sentiments],
+        "sentiment_score": [s[1] for s in sentiments]
+    })
 
 @asset
 def sentiment_summary(sentiment_analysis: pd.DataFrame) -> pd.DataFrame:
