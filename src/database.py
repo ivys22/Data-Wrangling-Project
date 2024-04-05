@@ -1,0 +1,1 @@
+# This file will define a database schema and initialize a SQLite database for storing and managing data related to sentiment analysis of comments. 
