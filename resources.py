@@ -15,7 +15,13 @@ class TextPreprocessor:
         self.lemmatizer = WordNetLemmatizer()
         self.stopwords = set(stopwords.words('english'))
     def preprocess(self, text):
-        ...
+        text = text.lower()
+        text = re.sub(r'[^\w\s]', '', text)
+        words = text.split()
+        if self.remove_stopwords:
+            words = [word for word in words if word not in self.stopwords]
+        words = [self.lemmatizer.lemmatize(word) for word in words]
+        return ' '.join(words)
 
 @resource(config_schema={"remove_stopwords": Field(bool, is_required=False, default_value=True)})
 def text_preprocessor_resource(init_context):
