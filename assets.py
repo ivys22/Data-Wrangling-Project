@@ -10,7 +10,12 @@ def raw_comments() -> pd.DataFrame:
 @asset(required_resource_keys={"text_preprocessor"})
 def preprocessed_comments(context, raw_comments: pd.DataFrame) -> pd.DataFrame:
     """Takes the raw comments and preprocesses them using a text preprocessing resource."""
-    ...
+    processed_texts = raw_comments['comment_text'].apply(lambda text: context.resources.text_preprocessor.preprocess(text))
+    return pd.DataFrame({
+        "comment_id": raw_comments["comment_id"],
+        "processed_text": processed_texts,
+        "is_poisonous": raw_comments["is_poisonous"]
+    })
 
 @asset
 def sentiment_analysis(preprocessed_comments: pd.DataFrame) -> pd.DataFrame:
