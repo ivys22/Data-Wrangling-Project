@@ -5,7 +5,7 @@ from textblob import TextBlob
 @asset
 def raw_comments() -> pd.DataFrame:
     """Defines an asset raw_comments that reads a CSV file into a Pandas DataFrame."""
-    ...
+    return pd.read_csv("data/mental_health.csv")
 
 @asset(required_resource_keys={"text_preprocessor"})
 def preprocessed_comments(context, raw_comments: pd.DataFrame) -> pd.DataFrame:
