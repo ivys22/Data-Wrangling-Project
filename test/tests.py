@@ -46,4 +46,13 @@ def test_sentiment_analysis():
 
 def test_sentiment_summary():
     """Tests the sentiment_summary function."""
-    ...
+    sentiment_df = pd.DataFrame({
+        "comment_id": [1, 2, 3],
+        "sentiment": ["positive", "negative", "positive"],
+        "sentiment_score": [0.5, -0.25, 0.75]
+    })
+
+    result = assets.sentiment_summary(sentiment_df)
+    assert not result.empty, "The result should not be empty"
+    assert len(result) == 2, "There should be two sentiment categories in the summary"
+    assert all(column in result.columns for column in ['sentiment', 'count', 'average_score']), "Summary should have all required columns"
