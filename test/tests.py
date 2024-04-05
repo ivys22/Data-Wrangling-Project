@@ -19,8 +19,20 @@ def test_raw_comments():
 
 def test_preprocessed_comments():
     """Tests the preprocessed_comments function."""
-    ...
+    raw_comments_df = pd.DataFrame({
+        "comment_id": [1, 2],
+        "comment_text": ["Test comment", "Another comment"],
+        "is_poisonous": [0, 1]
+    })
 
+    mock_context = Mock()
+    mock_context.resources.text_preprocessor.preprocess.side_effect = lambda x: x.upper() 
+
+    result = assets.preprocessed_comments(mock_context, raw_comments_df)
+    assert not result.empty, "The result should not be empty"
+    assert all([isinstance(text, str) for text in result['processed_text']]), "All processed texts should be strings"
+    assert result['processed_text'][0] == "TEST COMMENT", "Text should be processed correctly"
+    
 def test_sentiment_analysis():
     """Tests the sentiment_analysis function."""
     ...
