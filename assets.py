@@ -39,4 +39,5 @@ def sentiment_analysis(preprocessed_comments: pd.DataFrame) -> pd.DataFrame:
 @asset
 def sentiment_summary(sentiment_analysis: pd.DataFrame) -> pd.DataFrame:
     """Aggregates the sentiment analysis results to provide a summary. It groups the results by sentiment category ('positive', 'neutral', 'negative') and calculates the total count of comments and the average sentiment score within each category."""
-    ...
+    summary = sentiment_analysis.groupby('sentiment').agg(count=('sentiment', 'size'), average_score=('sentiment_score', 'mean')).reset_index()
+    return summary
