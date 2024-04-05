@@ -35,7 +35,14 @@ def test_preprocessed_comments():
     
 def test_sentiment_analysis():
     """Tests the sentiment_analysis function."""
-    ...
+    preprocessed_comments_df = pd.DataFrame({
+        "comment_id": [1, 2],
+        "processed_text": ["Sad right now", "Happy right now"]
+    })
+
+    result = assets.sentiment_analysis(preprocessed_comments_df)
+    assert not result.empty, "The result DataFrame should not be empty"
+    assert all(result['sentiment'].isin(['positive', 'neutral', 'negative'])), "Each sentiment should be categorized correctly"
 
 def test_sentiment_summary():
     """Tests the sentiment_summary function."""
