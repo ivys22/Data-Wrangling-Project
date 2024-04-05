@@ -26,4 +26,4 @@ class TextPreprocessor:
 @resource(config_schema={"remove_stopwords": Field(bool, is_required=False, default_value=True)})
 def text_preprocessor_resource(init_context):
     """Defines a Dagster resource for the TextPreprocessor class, making it possible to integrate this text preprocessing utility within a Dagster pipeline."""
-    ...
+    return TextPreprocessor(remove_stopwords=init_context.resource_config["remove_stopwords"])
