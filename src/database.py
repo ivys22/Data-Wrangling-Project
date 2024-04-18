@@ -26,7 +26,10 @@ class SentimentAnalysisResult(Base):
 
 class SentimentSummary(Base):
     """Represents the table sentiment_summary with columns for sentiment (an enum, also serving as the primary key), count (an integer representing the number of comments with this sentiment), and average_score (a float representing the average sentiment score for this category)."""
-    ...
+    __tablename__ = 'sentiment_summary'
+    sentiment = Column(Enum('positive', 'neutral', 'negative', name='sentiment_types'), primary_key=True)
+    count = Column(Integer)
+    average_score = Column(Float)
 
 DATABASE_URI = 'sqlite:///mental_health_analysis.db'
 
