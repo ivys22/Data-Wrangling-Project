@@ -13,7 +13,9 @@ class RawComment(Base):
 
 class PreprocessedComment(Base):
     """Represents the table preprocessed_comments with columns for comment_id (primary key) and processed_text (the preprocessed text of the comment)."""
-    ...
+    __tablename__ = 'preprocessed_comments'
+    comment_id = Column(Integer, primary_key=True)
+    processed_text = Column(String)
 
 class SentimentAnalysisResult(Base):
     """Represents the table sentiment_analysis with columns for comment_id (primary key), sentiment (an enum with values 'positive', 'neutral', 'negative'), and sentiment_score (a float representing the sentiment's intensity)."""
