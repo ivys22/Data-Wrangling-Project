@@ -6,7 +6,10 @@ Base = declarative_base()
 
 class RawComment(Base):
     """Represents the table raw_comments with columns for comment_id (primary key), comment_text (text of the comment), and is_poisonous (a boolean indicating whether the comment is harmful)."""
-    ...
+    __tablename__ = 'raw_comments'
+    comment_id = Column(Integer, primary_key=True)
+    comment_text = Column(String)
+    is_poisonous = Column(Boolean)
 
 class PreprocessedComment(Base):
     """Represents the table preprocessed_comments with columns for comment_id (primary key) and processed_text (the preprocessed text of the comment)."""
