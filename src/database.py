@@ -19,7 +19,10 @@ class PreprocessedComment(Base):
 
 class SentimentAnalysisResult(Base):
     """Represents the table sentiment_analysis with columns for comment_id (primary key), sentiment (an enum with values 'positive', 'neutral', 'negative'), and sentiment_score (a float representing the sentiment's intensity)."""
-    ...
+    __tablename__ = 'sentiment_analysis'
+    comment_id = Column(Integer, primary_key=True)
+    sentiment = Column(Enum('positive', 'neutral', 'negative', name='sentiment_types'))
+    sentiment_score = Column(Float)
 
 class SentimentSummary(Base):
     """Represents the table sentiment_summary with columns for sentiment (an enum, also serving as the primary key), count (an integer representing the number of comments with this sentiment), and average_score (a float representing the average sentiment score for this category)."""
