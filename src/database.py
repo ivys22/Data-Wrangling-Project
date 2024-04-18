@@ -38,4 +38,4 @@ Session = sessionmaker(bind=engine)
 
 def init_db():
     """When called, will create all tables in the database based on the schema defined by the model classes inheriting from 'Base'."""
-    ...
+    Base.metadata.create_all(engine)
