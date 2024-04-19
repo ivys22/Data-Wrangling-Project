@@ -1,11 +1,16 @@
 from dagster import asset
 import pandas as pd
 from textblob import TextBlob
+from database import Session, SentimentAnalysisResult, RawComment, PreprocessedComment, SentimentSummary
 
 @asset
 def raw_comments() -> pd.DataFrame:
-    """Defines an asset raw_comments that reads a CSV file into a Pandas DataFrame."""
-    return pd.read_csv("data/mental_health.csv")
+    """Loads data from the database."""
+    session = Session()
+    query = session.query(RawComment).all()
+    df = pd.DataFrame([{'comment_id': comment.comment_id, 'comment_text': comment.comment_text, 'is_poisonous': comment.is_poisonous} for comment in query])
+    session.close()
+    return df
 
 @asset(required_resource_keys={"text_preprocessor"})
 def preprocessed_comments(context, raw_comments: pd.DataFrame) -> pd.DataFrame:
