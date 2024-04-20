@@ -1,6 +1,9 @@
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
+from src.sentiment_analysis import assets, resources
 from dagster import repository
 from dagster import define_asset_job
-from src.sentiment_analysis import assets, resources
 
 @repository
 def mental_health_repo():
