@@ -4,9 +4,9 @@ from sqlalchemy import create_engine, Column, Integer, String, Float, Boolean, E
 Base = declarative_base()
 
 class RawComment(Base):
-    """Represents the table raw_comments with columns for comment_id (primary key), comment_text (text of the comment), and is_poisonous (a boolean indicating whether the comment is harmful)."""
+    """Represents the table raw_comments with columns for comment_id (autoincrement primary key), comment_text (text of the comment), and is_poisonous (a boolean indicating whether the comment is harmful)."""
     __tablename__ = 'raw_comments'
-    comment_id = Column(Integer, primary_key=True)
+    comment_id = Column(Integer, primary_key=True, autoincrement=True)
     comment_text = Column(String)
     is_poisonous = Column(Boolean)
 
@@ -36,5 +36,5 @@ engine = create_engine(DATABASE_URI)
 Session = sessionmaker(bind=engine)
 
 def init_db():
-    """When called, will create all tables in the database based on the schema defined by the model classes inheriting from 'Base'."""
+    """Initializes the database by creating all tables based on the defined schema. This setup ensures that the database is ready to accept data according to the defined structures."""
     Base.metadata.create_all(engine)
