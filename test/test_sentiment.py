@@ -1,21 +1,32 @@
 import pandas as pd
-from src.sentiment_analysis import assets
 from dagster import build_op_context
-from unittest.mock import patch
-from unittest.mock import Mock
+from src.sentiment_analysis import assets
+from src.sentiment_analysis.assets import raw_comments
+from dagster import build_op_context
+from unittest.mock import patch, Mock, MagicMock
 
 def test_raw_comments():
     """Tests the raw_comments function."""
-    mock_data = pd.DataFrame({
-        "comment_id": [1, 2],
-        "comment_text": ["Good service", "Bad experience"],
-        "is_poisonous": [0, 1]
-    })
+    mock_data = [
+        MagicMock(comment_id=1, comment_text="Good service", is_poisonous=False),
+        MagicMock(comment_id=2, comment_text="Bad experience", is_poisonous=True)
+    ]
 
-    with patch('pandas.read_csv', return_value=mock_data):
-        result = assets.raw_comments()
+    mock_query = MagicMock()
+    mock_query.all.return_value = mock_data
+
+    mock_session = MagicMock()
+    mock_session.query.return_value = mock_query
+    
+    with patch('src.sentiment_analysis.assets.Session', return_value=mock_session) as mocked_session:
+        mocked_session.return_value.__enter__.return_value = mock_session
+        mocked_session.return_value.__exit__.return_value = None
+        
+        result = raw_comments()
+
         assert isinstance(result, pd.DataFrame), "The result should be a DataFrame"
         assert not result.empty, "The result DataFrame should not be empty"
+        assert len(result) == 2, "DataFrame should contain two records"
         assert list(result.columns) == ["comment_id", "comment_text", "is_poisonous"], "DataFrame should have the correct columns"
 
 def test_preprocessed_comments():
