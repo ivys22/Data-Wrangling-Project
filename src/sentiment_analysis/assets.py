@@ -1,18 +1,30 @@
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
-from src.sentiment_analysis.database import Session, SentimentAnalysisResult, RawComment, PreprocessedComment, SentimentSummary
+from src.sentiment_analysis.database import Session, SentimentAnalysisResult, RawComment, PreprocessedComment, SentimentSummary, engine
 from dagster import asset
 import pandas as pd
 from textblob import TextBlob
 
 @asset
 def raw_comments() -> pd.DataFrame:
-    """Loads data from the database."""
+    """Loads data from the mental_health.csv file into the database."""
     session = Session()
-    query = session.query(RawComment).all()
-    df = pd.DataFrame([{'comment_id': comment.comment_id, 'comment_text': comment.comment_text, 'is_poisonous': comment.is_poisonous} for comment in query])
-    session.close()
+    df = pd.read_csv('data/mental_health.csv')
+    try:
+        for _, row in df.iterrows():
+            comment = RawComment(
+                comment_text=row['text'], 
+                is_poisonous=bool(row['label']) 
+            )
+            session.add(comment)
+        session.commit()
+        print("Comments successfully loaded and committed to the database.")
+    except Exception as e:
+        session.rollback()
+        print(f"An error occurred: {e}")
+    finally:
+        session.close()
     return df
 
 @asset(required_resource_keys={"text_preprocessor"})
@@ -20,7 +32,7 @@ def preprocessed_comments(context, raw_comments: pd.DataFrame) -> pd.DataFrame:
     """Takes the raw comments and preprocesses them using a text preprocessing resource."""
     processed_texts = raw_comments['comment_text'].apply(lambda text: context.resources.text_preprocessor.preprocess(text))
     return pd.DataFrame({
-        "comment_id": raw_comments["comment_id"],
+        "comment_id": raw_comments.index,
         "processed_text": processed_texts,
         "is_poisonous": raw_comments["is_poisonous"]
     })
