@@ -1,7 +1,7 @@
 from dagster import asset
 import pandas as pd
 from textblob import TextBlob
-from database import Session, SentimentAnalysisResult, RawComment, PreprocessedComment, SentimentSummary
+from .database import Session, SentimentAnalysisResult, RawComment, PreprocessedComment, SentimentSummary
 
 @asset
 def raw_comments() -> pd.DataFrame:

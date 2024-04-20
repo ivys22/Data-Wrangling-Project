@@ -1,6 +1,6 @@
 from dagster import repository
-from sentiment_analysis import assets
-from sentiment_analysis import resources
+from src.sentiment_analysis import assets
+from src.sentiment_analysis import resources
 
 @repository
 def mental_health_repo():

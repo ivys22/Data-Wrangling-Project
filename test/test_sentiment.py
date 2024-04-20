@@ -1,5 +1,5 @@
 import pandas as pd
-from sentiment_analysis import assets
+from src.sentiment_analysis import assets
 from unittest.mock import patch
 from unittest.mock import Mock
 
