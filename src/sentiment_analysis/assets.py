@@ -2,7 +2,7 @@ import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 from src.sentiment_analysis.database import Session, SentimentAnalysisResult, RawComment, PreprocessedComment, SentimentSummary, engine
-from dagster import asset
+from dagster import asset, build_op_context
 import pandas as pd
 from textblob import TextBlob
 
@@ -11,6 +11,7 @@ def raw_comments() -> pd.DataFrame:
     """Loads data from the mental_health.csv file into the database."""
     session = Session()
     df = pd.read_csv('data/mental_health.csv')
+    print("Columns in loaded DataFrame:", df.columns)
     try:
         for _, row in df.iterrows():
             comment = RawComment(
@@ -30,16 +31,20 @@ def raw_comments() -> pd.DataFrame:
 @asset(required_resource_keys={"text_preprocessor"})
 def preprocessed_comments(context, raw_comments: pd.DataFrame) -> pd.DataFrame:
     """Takes the raw comments and preprocesses them using a text preprocessing resource."""
-    processed_texts = raw_comments['comment_text'].apply(lambda text: context.resources.text_preprocessor.preprocess(text))
+    if 'text' not in raw_comments.columns:
+        raise ValueError("DataFrame does not contain 'text' column")
+    if 'label' not in raw_comments.columns:
+        raise ValueError("DataFrame does not contain 'label' column")
+    processed_texts = raw_comments['text'].apply(lambda text: context.resources.text_preprocessor.preprocess(text))
     return pd.DataFrame({
         "comment_id": raw_comments.index,
         "processed_text": processed_texts,
-        "is_poisonous": raw_comments["is_poisonous"]
+        "is_poisonous": raw_comments["label"]
     })
 
 @asset
 def sentiment_analysis(preprocessed_comments: pd.DataFrame) -> pd.DataFrame:
-    """Performs sentiment analysis on the preprocessed comments. For each comment, it uses TextBlob to calculate the sentiment polarity. Based on the polarity, comments are categorized as 'positive', 'neutral', or 'negative'."""
+    """Performs sentiment analysis on the preprocessed comments using TextBlob."""
     def analyze_sentiment(text):
         analysis = TextBlob(text)
         if analysis.sentiment.polarity > 0:
@@ -48,7 +53,6 @@ def sentiment_analysis(preprocessed_comments: pd.DataFrame) -> pd.DataFrame:
             return 'neutral', analysis.sentiment.polarity
         else:
             return 'negative', analysis.sentiment.polarity
-    
     sentiments = preprocessed_comments['processed_text'].apply(lambda x: analyze_sentiment(x))
     return pd.DataFrame({
         "comment_id": preprocessed_comments["comment_id"],
@@ -58,6 +62,16 @@ def sentiment_analysis(preprocessed_comments: pd.DataFrame) -> pd.DataFrame:
 
 @asset
 def sentiment_summary(sentiment_analysis: pd.DataFrame) -> pd.DataFrame:
-    """Aggregates the sentiment analysis results to provide a summary. It groups the results by sentiment category ('positive', 'neutral', 'negative') and calculates the total count of comments and the average sentiment score within each category."""
+    """Aggregates results to provide a sentiment summary."""
     summary = sentiment_analysis.groupby('sentiment').agg(count=('sentiment', 'size'), average_score=('sentiment_score', 'mean')).reset_index()
     return summary
+if __name__ == '__main__':
+    class MockTextPreprocessor:
+        def preprocess(self, text):
+            return text.lower()
+    context = build_op_context(resources={'text_preprocessor': MockTextPreprocessor()})
+    raw_comments_df = raw_comments()
+    preprocessed_comments_df = preprocessed_comments(context, raw_comments=raw_comments_df)
+    sentiment_df = sentiment_analysis(preprocessed_comments=preprocessed_comments_df)
+    summary_df = sentiment_summary(sentiment_df)
+    print(summary_df)

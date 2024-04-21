@@ -22,8 +22,8 @@ def test_raw_comments():
 def test_preprocessed_comments():
     raw_comments_df = pd.DataFrame({
         "comment_id": [1, 2],
-        "comment_text": ["Test comment", "Another comment"],
-        "is_poisonous": [0, 1]
+        "text": ["Test comment", "Another comment"],
+        "label": [0, 1]
     })
 
     mock_resource = Mock()
