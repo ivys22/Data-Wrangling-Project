@@ -77,3 +77,7 @@ if __name__ == '__main__':
     sentiment_df = sentiment_analysis(preprocessed_comments=preprocessed_comments_df)
     summary_df = sentiment_summary(sentiment_df)
     print(summary_df)
+
+@asset
+def emotion_analysis(preprocessed_comments: pd.DataFrame) -> pd.DataFrame:
+    """Performs emotion analysis on the preprocessed comments using NRCLex."""
