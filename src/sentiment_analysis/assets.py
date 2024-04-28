@@ -2,6 +2,7 @@ import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 from src.sentiment_analysis.database import Session, SentimentAnalysisResult, RawComment, PreprocessedComment, SentimentSummary, engine
+from kaggle.api.kaggle_api_extended import KaggleApi
 from dagster import asset, build_op_context
 import pandas as pd
 from textblob import TextBlob
@@ -10,6 +11,9 @@ from textblob import TextBlob
 def raw_comments() -> pd.DataFrame:
     """Loads data from the mental_health.csv file into the database."""
     session = Session()
+    api = KaggleApi()
+    api.authenticate()
+    api.dataset_download_files('reihanenamdari/mental-health-corpus', path='data', unzip=True)
     df = pd.read_csv('data/mental_health.csv')
     print("Columns in loaded DataFrame:", df.columns)
     try:
@@ -20,10 +24,8 @@ def raw_comments() -> pd.DataFrame:
             )
             session.add(comment)
         session.commit()
-        print("Comments successfully loaded and committed to the database.")
     except Exception as e:
         session.rollback()
-        print(f"An error occurred: {e}")
     finally:
         session.close()
     return df
