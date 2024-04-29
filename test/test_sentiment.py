@@ -20,6 +20,7 @@ def test_raw_comments():
         assert list(result.columns) == ["text", "label"], "DataFrame should have the correct columns"
 
 def test_preprocessed_comments():
+    """Tests the preprocessed_comments function."""
     raw_comments_df = pd.DataFrame({
         "comment_id": [1, 2],
         "text": ["Test comment", "Another comment"],
@@ -57,3 +58,7 @@ def test_sentiment_summary():
     assert not result.empty, "The result should not be empty"
     assert len(result) == 2, "There should be two sentiment categories in the summary"
     assert all(column in result.columns for column in ['sentiment', 'count', 'average_score']), "Summary should have all required columns"
+
+def test_emotion_analysis():
+    """Tests emotion_analysis function."""
+    
