@@ -46,17 +46,17 @@ To execute the Dagster pipeline and start the Dash visualization for sentiment a
 
 * Run the Dagster pipeline:
 
-    *dagit -f src/sentiment_analysis/repository.py*
+    dagit -f src/sentiment_analysis/repository.py
 
 Access the Dagit UI via a web browser to visualize and manage the pipeline.
 
 * To start the Dash web application:
 
-    *python src/sentiment_analysis/visualization.py*
+    python src/sentiment_analysis/visualization.py
 
 ## Testing
 
 The project uses pytest for testing. To run the tests, execute the following in the project directory:
 
-    *pytest*
+    pytest
     
