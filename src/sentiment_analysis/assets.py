@@ -5,7 +5,10 @@ from src.sentiment_analysis.database import Session, SentimentAnalysisResult, Ra
 from kaggle.api.kaggle_api_extended import KaggleApi
 from dagster import asset, build_op_context
 import pandas as pd
+import nltk
+nltk.download('punkt')
 from textblob import TextBlob
+from nrclex import NRCLex
 
 @asset
 def raw_comments() -> pd.DataFrame:
@@ -81,3 +84,16 @@ if __name__ == '__main__':
 @asset
 def emotion_analysis(preprocessed_comments: pd.DataFrame) -> pd.DataFrame:
     """Performs emotion analysis on the preprocessed comments using NRCLex."""
+    def analyze_emotion(text):
+        emotion_result = NRCLex(text)
+        emotion_dict = {emotion: 0 for emotion in ['fear', 'anger', 'anticipation', 'trust', 'surprise', 'positive', 'negative', 'sadness', 'disgust', 'joy']}
+        emotion_dict.update(emotion_result.raw_emotion_scores)
+        return [emotion_dict[emotion] for emotion in sorted(emotion_dict)]
+
+    emotions_list = preprocessed_comments['processed_text'].apply(analyze_emotion)
+    emotion_df = pd.DataFrame(
+        emotions_list.tolist(),
+        index=preprocessed_comments["comment_id"],
+        columns=sorted(['fear', 'anger', 'anticipation', 'trust', 'surprise', 'positive', 'negative', 'sadness', 'disgust', 'joy'])
+    )
+    return emotion_df.reset_index().rename(columns={'index': 'comment_id'})
