@@ -28,9 +28,16 @@ def mental_health_repo():
         selection=["sentiment_summary"]
     )
 
+    emotion_analysis_job = define_asset_job(
+        name="emotion_analysis_job",
+        selection=["emotion_analysis"]
+    )
+
+
     return [
         raw_comments_job,
         preprocessed_comments_job,
         sentiment_analysis_job,
-        sentiment_summary_job
+        sentiment_summary_job,
+        emotion_analysis_job
     ]
