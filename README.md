@@ -16,10 +16,10 @@ This project is focused on analyzing sentiment in comments related to mental hea
 
 * NLTK Data: Download the required NLTK datasets: 
 
-    *import nltk*
-    *nltk.download('stopwords')*
-    *nltk.download('wordnet')*
-    *nltk.download('omw-1.4')*
+    import nltk
+    nltk.download('stopwords')
+    nltk.download('wordnet')
+    nltk.download('omw-1.4')
 
 * Database Setup: Initialize the database using SQLAlchemy:
 
@@ -28,17 +28,12 @@ This project is focused on analyzing sentiment in comments related to mental hea
 
 ## Project Structure
 
-/src
-    /sentiment_analysis
-        assets.py # Dagster assets for the ETL pipeline
-        database.py # SQLAlchemy ORM models and database initialization
-        repository.py # Dagster repository to orchestrate jobs
-        resources.py # Resources for text preprocessing
-        visualization.py # Dash application for data visualization
-    /tests
-        test_sentiment.py # Pytest unit tests for functionality
-    /data
-        mental_health.csv # Dataset file
+*assets.py: Contains Dagster assets that handle data processing steps including loading raw data, preprocessing text, sentiment analysis, and emotion analysis.
+*database.py: Defines SQLAlchemy ORM classes for the database tables and initializes the database.
+*repository.py: Sets up a Dagster repository that schedules and runs jobs for each asset.
+*resources.py: Provides a text preprocessing resource that integrates into the Dagster asset framework.
+*visualization.py: Utilizes Dash and Plotly to create an interactive web dashboard for visualizing sentiment and emotion analysis results.
+*test_sentiment.py: Contains unit tests for each processing step to ensure functionality and reliability.
 
 ## Running the Project
 
