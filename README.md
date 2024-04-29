@@ -17,14 +17,18 @@ This project is focused on analyzing sentiment in comments related to mental hea
 * NLTK Data: Download the required NLTK datasets: 
 
     import nltk
+    
     nltk.download('stopwords')
+
     nltk.download('wordnet')
+
     nltk.download('omw-1.4')
 
 * Database Setup: Initialize the database using SQLAlchemy:
 
-    *from src.sentiment_analysis.database import init_db*
-    *init_db()*
+    from src.sentiment_analysis.database import init_db
+
+    init_db()
 
 ## Project Structure
 
