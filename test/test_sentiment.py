@@ -61,4 +61,37 @@ def test_sentiment_summary():
 
 def test_emotion_analysis():
     """Tests emotion_analysis function."""
-    
+    preprocessed_comments_df = pd.DataFrame({
+        "comment_id": [1, 2],
+        "processed_text": ["I am so happy today!", "I am not happy today!"]
+    })
+
+    expected_output = pd.DataFrame({
+        "comment_id": [1, 2],
+        "anticipation": [1, 1],
+        "joy": [1, 1],
+        "positive": [1, 1],
+        "trust": [1, 1],
+        "fear": [0, 0],
+        "anger": [0, 0],
+        "surprise": [0, 0],
+        "negative": [0, 0],
+        "sadness": [0, 0],
+        "disgust": [0, 0]
+    })
+
+    with patch('nrclex.NRCLex') as mock_nrc:
+        mock_instance = MagicMock()
+        mock_instance.raw_emotion_scores.side_effect = [
+            {'anticipation': 1, 'joy': 1, 'positive': 1, 'trust': 1},
+            {'anticipation': 1, 'joy': 1, 'positive': 1, 'trust': 1}
+        ]
+
+        mock_nrc.return_value = mock_instance
+
+        result = assets.emotion_analysis(preprocessed_comments_df)
+        result = result.sort_index(axis=1)
+        
+        expected_output = expected_output.sort_index(axis=1)
+
+        pd.testing.assert_frame_equal(result, expected_output)
