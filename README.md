@@ -29,10 +29,15 @@ This project is focused on analyzing sentiment in comments related to mental hea
 ## Project Structure
 
 *assets.py: Contains Dagster assets that handle data processing steps including loading raw data, preprocessing text, sentiment analysis, and emotion analysis.
+
 *database.py: Defines SQLAlchemy ORM classes for the database tables and initializes the database.
+
 *repository.py: Sets up a Dagster repository that schedules and runs jobs for each asset.
+
 *resources.py: Provides a text preprocessing resource that integrates into the Dagster asset framework.
+
 *visualization.py: Utilizes Dash and Plotly to create an interactive web dashboard for visualizing sentiment and emotion analysis results.
+
 *test_sentiment.py: Contains unit tests for each processing step to ensure functionality and reliability.
 
 ## Running the Project
